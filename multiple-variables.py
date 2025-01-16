@@ -1,6 +1,6 @@
 # dados de treinamento
 import numpy as np
-import pandas as pd
+from pandas import DataFrame
 import time
 
 
@@ -18,7 +18,7 @@ class GeraDados:
 
     def tabela(self):
 
-        dados = pd.DataFrame({
+        dados = DataFrame({
             'Area(m2)': self.area,
             'Num_Quartos': self.num_quartos,
             'Idade': self.idade,
@@ -30,11 +30,11 @@ class GeraDados:
         print(dados.head())
 
     def featureScaling(self):
-        
-        area = (self.area - np.mean(self.area))/ (np.max(self.area)-np.min(self.area))
-        num_quartos = (self.num_quartos - np.mean(self.num_quartos)) / (np.max(self.num_quartos)-np.min(self.num_quartos))
+
+        area = (self.area - np.mean(self.area)) / (np.max(self.area)-np.min(self.area))
+        num_quartos = (self.num_quartos - np.mean(self.num_quartos))/(np.max(self.num_quartos)-np.min(self.num_quartos))
         idade = (self.idade - np.mean(self.idade)) / (np.max(self.idade)-np.min(self.idade))
-        distancia_centro = (self.distancia_centro - np.mean(self.distancia_centro)) / (np.max(self.distancia_centro)-np.min(self.distancia_centro))
+        distancia_centro = (self.distancia_centro - np.mean(self.distancia_centro))/(np.max(self.distancia_centro)-np.min(self.distancia_centro))
 
         Y = (np.array(self.preco))
         X = np.array([np.ones(100), area, num_quartos, idade, distancia_centro]).T
@@ -77,7 +77,8 @@ class Assistente(Calculadora):
 
     def estimativa(self, theta):
 
-        theta_otimizado = self.gradiente(np.zeros(self.x.shape[1]), l_r=0.001, epoch=800)
+        theta_otimizado = self.gradiente(
+            np.zeros(self.x.shape[1]), l_r=0.001, epoch=800)
 
         area = float(input('Area da casa em metros quadrados: '))
         quartos = int(input('Números de quartos: '))
@@ -99,30 +100,34 @@ def sistema():
     print('Bem vindo ao programa de estimativas de preços imobiliarios')
 
     while True:
-
-        time.sleep(0.5)
-        print('\nMenu')
-        print('1 - Mostrar dados de treinamento')
-        print('2 - Fazer previsão')
-        print('3 - Sair')
-
-        opcao = int(input('Digite o número da opção desejada: '))
-
-        if opcao == 1:
-            dados.tabela()
+        try:
             time.sleep(0.5)
+            print('\nMenu')
+            print('1 - Mostrar dados de treinamento')
+            print('2 - Fazer previsão')
+            print('3 - Sair')
 
-        elif opcao == 2:
-            print('Para realizar a previsão alguns dados serão necessários.')
-            time.sleep(0.5)
-            assistente.estimativa(theta)
-            time.sleep(0.5)
+            opcao = int(input('Digite o número da opção desejada: '))
 
-        elif opcao == 3:
-            print('Encerrando o sistema')
-            break
+            if opcao == 1:
+                dados.tabela()
+                time.sleep(0.5)
 
-        else:
-            print('Opção inválida')
+            elif opcao == 2:
+                print('Para realizar a previsão alguns dados serão necessários.')
+                time.sleep(0.5)
+                assistente.estimativa(theta)
+                time.sleep(0.5)
+
+            elif opcao == 3:
+                print('Encerrando o sistema')
+                break
+
+            else:
+                print('Opção inválida')
+
+        except ValueError:
+            print('Você não digitou um número.')
+
 
 sistema()
